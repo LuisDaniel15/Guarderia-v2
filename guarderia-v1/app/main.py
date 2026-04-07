@@ -43,4 +43,4 @@ app.include_router(notificacion_router,           prefix="/notificaciones",     
 
 @app.get("/")
 def root():
-    return {"mensaje": "API Sistema Guarderia v1.0"}
+    return {"mensaje": "API Sistema Guarderia v1.0"}    

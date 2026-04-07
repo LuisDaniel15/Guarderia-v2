@@ -11,8 +11,13 @@ class HistorialController:
             conn = get_db_connection()
             cursor = conn.cursor()
             cursor.execute(
-                "INSERT INTO historial (autor_id, categoria, titulo, descripcion, fecha, medidas_tomadas, acudiente_notificado, es_privado) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
-                (historial.autor_id, historial.categoria, historial.titulo, historial.descripcion, historial.fecha, historial.medidas_tomadas, historial.acudiente_notificado, historial.es_privado)
+                """INSERT INTO historial 
+                (autor_id, categoria, titulo, descripcion, fecha, medidas_tomadas, 
+                acudiente_notificado, es_privado) 
+                VALUES (%s, %s, %s, %s, COALESCE(%s, CURRENT_DATE), %s, %s, %s)""",
+                (historial.autor_id, historial.categoria, historial.titulo,
+                 historial.descripcion, historial.fecha, historial.medidas_tomadas,
+                 historial.acudiente_notificado, historial.es_privado)
             )
             conn.commit()
             return {"resultado": "Historial creado"}

@@ -11,8 +11,12 @@ class AsistenciaController:
             conn = get_db_connection()
             cursor = conn.cursor()
             cursor.execute(
-                "INSERT INTO asistencia (nino_id, fecha, hora_entrada, hora_salida, estado, registrado_por, observacion) VALUES (%s, %s, %s, %s, %s, %s, %s)",
-                (asistencia.nino_id, asistencia.fecha, asistencia.hora_entrada, asistencia.hora_salida, asistencia.estado, asistencia.registrado_por, asistencia.observacion)
+                """INSERT INTO asistencia 
+                (nino_id, fecha, hora_entrada, hora_salida, estado, registrado_por, observacion) 
+                VALUES (%s, COALESCE(%s, CURRENT_DATE), %s, %s, %s, %s, %s)""",
+                (asistencia.nino_id, asistencia.fecha, asistencia.hora_entrada,
+                asistencia.hora_salida, asistencia.estado, asistencia.registrado_por,
+                asistencia.observacion)
             )
             conn.commit()
             return {"resultado": "Asistencia registrada"}

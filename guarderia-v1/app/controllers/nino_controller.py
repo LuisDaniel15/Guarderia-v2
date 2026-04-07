@@ -11,8 +11,15 @@ class NinoController:
             conn = get_db_connection()
             cursor = conn.cursor()
             cursor.execute(
-                "INSERT INTO ninos (nombre, apellido, fecha_nacimiento, genero, foto_url, grupo, fecha_ingreso, activo, tipo_sangre, medico_nombre, medico_telefono, seguro_medico, observaciones_medicas) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                (nino.nombre, nino.apellido, nino.fecha_nacimiento, nino.genero, nino.foto_url, nino.grupo, nino.fecha_ingreso, nino.activo, nino.tipo_sangre, nino.medico_nombre, nino.medico_telefono, nino.seguro_medico, nino.observaciones_medicas)
+                """INSERT INTO ninos 
+                (nombre, apellido, fecha_nacimiento, genero, foto_url, grupo, 
+                activo, tipo_sangre, medico_nombre, medico_telefono, 
+                seguro_medico, observaciones_medicas) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                (nino.nombre, nino.apellido, nino.fecha_nacimiento, nino.genero,
+                nino.foto_url, nino.grupo, nino.activo, nino.tipo_sangre,
+                nino.medico_nombre, nino.medico_telefono, nino.seguro_medico,
+                nino.observaciones_medicas)
             )
             conn.commit()
             return {"resultado": "Nino creado"}
