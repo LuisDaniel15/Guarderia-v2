@@ -12,14 +12,14 @@ class NinoController:
             cursor = conn.cursor()
             cursor.execute(
                 """INSERT INTO ninos 
-                (nombre, apellido, fecha_nacimiento, genero, foto_url, grupo, 
+                (nombre, apellido, fecha_nacimiento, genero, foto_url, grupo, grupo_id,
                 activo, tipo_sangre, medico_nombre, medico_telefono, 
                 seguro_medico, observaciones_medicas) 
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
                 (nino.nombre, nino.apellido, nino.fecha_nacimiento, nino.genero,
-                nino.foto_url, nino.grupo, nino.activo, nino.tipo_sangre,
-                nino.medico_nombre, nino.medico_telefono, nino.seguro_medico,
-                nino.observaciones_medicas)
+                 nino.foto_url, nino.grupo, nino.grupo_id, nino.activo, nino.tipo_sangre,
+                 nino.medico_nombre, nino.medico_telefono, nino.seguro_medico,
+                 nino.observaciones_medicas)
             )
             conn.commit()
             return {"resultado": "Nino creado"}
@@ -52,7 +52,8 @@ class NinoController:
                     'seguro_medico':         result[12],
                     'observaciones_medicas': result[13],
                     'creado_en':             str(result[14]),
-                    'actualizado_en':        str(result[15])
+                    'actualizado_en':        str(result[15]),
+                    'grupo_id':              result[16]
                 }
                 return jsonable_encoder(content)
             else:
@@ -87,7 +88,43 @@ class NinoController:
                     'seguro_medico':         data[12],
                     'observaciones_medicas': data[13],
                     'creado_en':             str(data[14]),
-                    'actualizado_en':        str(data[15])
+                    'actualizado_en':        str(data[15]),
+                    'grupo_id':              data[16]
+                }
+                payload.append(content)
+            return jsonable_encoder(payload)
+        except psycopg2.Error as err:
+            print(err)
+            conn.rollback()
+        finally:
+            conn.close()
+
+    def get_ninos_by_grupo(self, grupo_id: int):
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM ninos WHERE grupo_id = %s AND activo = TRUE", (grupo_id,))
+            result = cursor.fetchall()
+            payload = []
+            for data in result:
+                content = {
+                    'id':                    data[0],
+                    'nombre':                data[1],
+                    'apellido':              data[2],
+                    'fecha_nacimiento':      str(data[3]),
+                    'genero':                data[4],
+                    'foto_url':              data[5],
+                    'grupo':                 data[6],
+                    'fecha_ingreso':         str(data[7]),
+                    'activo':                data[8],
+                    'tipo_sangre':           data[9],
+                    'medico_nombre':         data[10],
+                    'medico_telefono':       data[11],
+                    'seguro_medico':         data[12],
+                    'observaciones_medicas': data[13],
+                    'creado_en':             str(data[14]),
+                    'actualizado_en':        str(data[15]),
+                    'grupo_id':              data[16]
                 }
                 payload.append(content)
             return jsonable_encoder(payload)
@@ -102,8 +139,14 @@ class NinoController:
             conn = get_db_connection()
             cursor = conn.cursor()
             cursor.execute(
-                "UPDATE ninos SET nombre=%s, apellido=%s, fecha_nacimiento=%s, genero=%s, foto_url=%s, grupo=%s, activo=%s, tipo_sangre=%s, medico_nombre=%s, medico_telefono=%s, seguro_medico=%s, observaciones_medicas=%s WHERE id=%s",
-                (nino.nombre, nino.apellido, nino.fecha_nacimiento, nino.genero, nino.foto_url, nino.grupo, nino.activo, nino.tipo_sangre, nino.medico_nombre, nino.medico_telefono, nino.seguro_medico, nino.observaciones_medicas, nino_id)
+                """UPDATE ninos SET nombre=%s, apellido=%s, fecha_nacimiento=%s, genero=%s,
+                foto_url=%s, grupo=%s, grupo_id=%s, activo=%s, tipo_sangre=%s,
+                medico_nombre=%s, medico_telefono=%s, seguro_medico=%s,
+                observaciones_medicas=%s WHERE id=%s""",
+                (nino.nombre, nino.apellido, nino.fecha_nacimiento, nino.genero,
+                 nino.foto_url, nino.grupo, nino.grupo_id, nino.activo, nino.tipo_sangre,
+                 nino.medico_nombre, nino.medico_telefono, nino.seguro_medico,
+                 nino.observaciones_medicas, nino_id)
             )
             conn.commit()
             return {"resultado": "Nino actualizado"}

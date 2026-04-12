@@ -7,4 +7,5 @@ class Usuario(BaseModel):
     email: str
     password_hash: str = None
     rol_id: int
+    grupo_id: int = None
     activo: bool = True

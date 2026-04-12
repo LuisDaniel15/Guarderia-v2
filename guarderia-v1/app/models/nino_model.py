@@ -8,7 +8,7 @@ class Nino(BaseModel):
     genero: str = None
     foto_url: str = None
     grupo: str = None
-    fecha_ingreso: str = None
+    grupo_id: int = None
     activo: bool = True
     tipo_sangre: str = None
     medico_nombre: str = None

@@ -17,6 +17,10 @@ def get_nino(nino_id: int):
 def get_ninos():
     return ctrl.get_ninos()
 
+@router.get("/get_ninos_by_grupo/{grupo_id}")
+def get_ninos_by_grupo(grupo_id: int):
+    return ctrl.get_ninos_by_grupo(grupo_id)
+
 @router.put("/update_nino/{nino_id}")
 def update_nino(nino_id: int, nino: Nino):
     return ctrl.update_nino(nino_id, nino)

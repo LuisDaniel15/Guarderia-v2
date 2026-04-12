@@ -11,8 +11,8 @@ class UsuarioController:
             conn = get_db_connection()
             cursor = conn.cursor()
             cursor.execute(
-                "INSERT INTO usuarios (nombre, apellido, email, password_hash, rol_id, activo) VALUES (%s, %s, %s, %s, %s, %s)",
-                (usuario.nombre, usuario.apellido, usuario.email, usuario.password_hash, usuario.rol_id, usuario.activo)
+                "INSERT INTO usuarios (nombre, apellido, email, password_hash, rol_id, grupo_id, activo) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                (usuario.nombre, usuario.apellido, usuario.email, usuario.password_hash, usuario.rol_id, usuario.grupo_id, usuario.activo)
             )
             conn.commit()
             return {"resultado": "Usuario creado"}
@@ -30,15 +30,16 @@ class UsuarioController:
             result = cursor.fetchone()
             if result:
                 content = {
-                    'id':            result[0],
-                    'nombre':        result[1],
-                    'apellido':      result[2],
-                    'email':         result[3],
-                    'password_hash': result[4],
-                    'activo':        result[5],
-                    'creado_en':     str(result[6]),
-                    'actualizado_en':str(result[7]),
-                    'rol_id':        result[8]
+                    'id':             result[0],
+                    'nombre':         result[1],
+                    'apellido':       result[2],
+                    'email':          result[3],
+                    'password_hash':  result[4],
+                    'activo':         result[5],
+                    'creado_en':      str(result[6]),
+                    'actualizado_en': str(result[7]),
+                    'rol_id':         result[8],
+                    'grupo_id':       result[9]
                 }
                 return jsonable_encoder(content)
             else:
@@ -58,15 +59,16 @@ class UsuarioController:
             payload = []
             for data in result:
                 content = {
-                    'id':            data[0],
-                    'nombre':        data[1],
-                    'apellido':      data[2],
-                    'email':         data[3],
-                    'password_hash': data[4],
-                    'activo':        data[5],
-                    'creado_en':     str(data[6]),
-                    'actualizado_en':str(data[7]),
-                    'rol_id':        data[8]
+                    'id':             data[0],
+                    'nombre':         data[1],
+                    'apellido':       data[2],
+                    'email':          data[3],
+                    'password_hash':  data[4],
+                    'activo':         data[5],
+                    'creado_en':      str(data[6]),
+                    'actualizado_en': str(data[7]),
+                    'rol_id':         data[8],
+                    'grupo_id':       data[9]
                 }
                 payload.append(content)
             return jsonable_encoder(payload)
@@ -81,8 +83,8 @@ class UsuarioController:
             conn = get_db_connection()
             cursor = conn.cursor()
             cursor.execute(
-                "UPDATE usuarios SET nombre = %s, apellido = %s, email = %s, password_hash = %s, rol_id = %s, activo = %s WHERE id = %s",
-                (usuario.nombre, usuario.apellido, usuario.email, usuario.password_hash, usuario.rol_id, usuario.activo, usuario_id)
+                "UPDATE usuarios SET nombre=%s, apellido=%s, email=%s, password_hash=%s, rol_id=%s, grupo_id=%s, activo=%s WHERE id=%s",
+                (usuario.nombre, usuario.apellido, usuario.email, usuario.password_hash, usuario.rol_id, usuario.grupo_id, usuario.activo, usuario_id)
             )
             conn.commit()
             return {"resultado": "Usuario actualizado"}

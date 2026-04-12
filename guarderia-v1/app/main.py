@@ -16,6 +16,7 @@ from routes.historial_router import router as historial_router
 from routes.historial_nino_router import router as historial_nino_router
 from routes.notificacion_router import router as notificacion_router
 from routes.auth_router import router as auth_router
+from routes.grupo_router import router as grupo_router
 
 
 app = FastAPI(title="Sistema Guarderia", version="1.0")
@@ -42,6 +43,7 @@ app.include_router(actividad_participante_router, prefix="/actividad-participant
 app.include_router(historial_router,              prefix="/historial",             tags=["Historial"])
 app.include_router(historial_nino_router,         prefix="/historial-ninos",       tags=["Historial-Ninos"])
 app.include_router(notificacion_router,           prefix="/notificaciones",        tags=["Notificaciones"])
+app.include_router(grupo_router, prefix="/grupos", tags=["Grupos"])
 app.include_router(auth_router, prefix="/auth", tags=["Auth"])
 
 @app.get("/")
