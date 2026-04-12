@@ -168,3 +168,61 @@ class NinoController:
             conn.rollback()
         finally:
             conn.close()
+
+    def registrar_nino_completo(self, datos: dict):
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            nino      = datos['nino']
+            acudiente = datos['acudiente']
+
+            # 1. Crear o buscar acudiente
+            if acudiente.get('id'):
+                acudiente_id = acudiente['id']
+            else:
+                cursor.execute(
+                    """INSERT INTO acudientes 
+                    (nombre, apellido, dni, telefono, telefono_emergencia, email, direccion, relacion)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING id""",
+                    (acudiente['nombre'], acudiente['apellido'], acudiente.get('dni'),
+                    acudiente.get('telefono'), acudiente.get('telefono_emergencia'),
+                    acudiente.get('email'), acudiente.get('direccion'), acudiente.get('relacion', 'otro'))
+                )
+                acudiente_id = cursor.fetchone()[0]
+
+            # 2. Crear niño
+            cursor.execute(
+                """INSERT INTO ninos 
+                (nombre, apellido, fecha_nacimiento, genero, grupo, grupo_id,
+                tipo_sangre, medico_nombre, medico_telefono, seguro_medico, observaciones_medicas)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id""",
+                (nino['nombre'], nino['apellido'], nino['fecha_nacimiento'],
+                nino.get('genero'), nino.get('grupo'), nino.get('grupo_id'),
+                nino.get('tipo_sangre'), nino.get('medico_nombre'),
+                nino.get('medico_telefono'), nino.get('seguro_medico'),
+                nino.get('observaciones_medicas'))
+            )
+            nino_id = cursor.fetchone()[0]
+
+            # 3. Crear relación nino-acudiente
+            cursor.execute(
+                """INSERT INTO nino_acudiente 
+                (nino_id, acudiente_id, es_contacto_principal, puede_recoger)
+                VALUES (%s, %s, TRUE, TRUE)""",
+                (nino_id, acudiente_id)
+            )
+
+            conn.commit()
+            return {
+                "resultado": "Nino registrado correctamente",
+                "nino_id":      nino_id,
+                "acudiente_id": acudiente_id
+            }
+
+        except psycopg2.Error as err:
+            print(err)
+            conn.rollback()
+            return {"error": str(err)}
+        finally:
+            conn.close()

@@ -1,9 +1,30 @@
 from fastapi import APIRouter
 from controllers.nino_controller import NinoController
 from models.nino_model import Nino
+from pydantic import BaseModel
+from typing import Optional
 
 router = APIRouter()
 ctrl = NinoController()
+
+class AcudienteNino(BaseModel):
+    id: Optional[int] = None
+    nombre: str
+    apellido: str
+    dni: Optional[str] = None
+    telefono: Optional[str] = None
+    telefono_emergencia: Optional[str] = None
+    email: Optional[str] = None
+    direccion: Optional[str] = None
+    relacion: str = 'otro'
+
+class RegistroCompleto(BaseModel):
+    nino: Nino
+    acudiente: AcudienteNino
+
+@router.post("/registrar_completo")
+def registrar_completo(datos: RegistroCompleto):
+    return ctrl.registrar_nino_completo(datos.dict())
 
 @router.post("/create_nino")
 def create_nino(nino: Nino):
