@@ -17,6 +17,10 @@ def get_participante(ap_id: int):
 def get_participantes():
     return ctrl.get_participantes()
 
+@router.get("/get_by_actividad/{actividad_id}")
+def get_by_actividad(actividad_id: int):
+    return ctrl.get_participantes_by_actividad(actividad_id)
+
 @router.put("/update_participante/{ap_id}")
 def update_participante(ap_id: int, ap: ActividadParticipante):
     return ctrl.update_participante(ap_id, ap)

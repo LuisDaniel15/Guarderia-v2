@@ -17,6 +17,10 @@ def get_actividad_personal(ap_id: int):
 def get_actividades_personal():
     return ctrl.get_actividades_personal()
 
+@router.get("/get_by_actividad/{actividad_id}")
+def get_by_actividad(actividad_id: int):
+    return ctrl.get_personal_by_actividad(actividad_id)
+
 @router.put("/update_actividad_personal/{ap_id}")
 def update_actividad_personal(ap_id: int, ap: ActividadPersonal):
     return ctrl.update_actividad_personal(ap_id, ap)

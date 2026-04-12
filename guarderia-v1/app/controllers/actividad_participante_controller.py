@@ -98,3 +98,33 @@ class ActividadParticipanteController:
             conn.rollback()
         finally:
             conn.close()
+    def get_participantes_by_actividad(self, actividad_id: int):
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT ap.*, n.nombre, n.apellido
+                FROM actividad_participantes ap
+                JOIN ninos n ON ap.nino_id = n.id
+                WHERE ap.actividad_id = %s
+            """, (actividad_id,))
+            result = cursor.fetchall()
+            payload = []
+            for data in result:
+                content = {
+                    'id':           data[0],
+                    'actividad_id': data[1],
+                    'nino_id':      data[2],
+                    'asistio':      data[3],
+                    'observacion':  data[4],
+                    'creado_en':    str(data[5]),
+                    'nombre':       data[6],
+                    'apellido':     data[7]
+                }
+                payload.append(content)
+            return jsonable_encoder(payload)
+        except psycopg2.Error as err:
+            print(err)
+            conn.rollback()
+        finally:
+            conn.close()

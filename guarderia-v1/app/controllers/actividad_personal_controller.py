@@ -98,3 +98,34 @@ class ActividadPersonalController:
             conn.rollback()
         finally:
             conn.close()
+
+    def get_personal_by_actividad(self, actividad_id: int):
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT ap.*, u.nombre, u.apellido
+                FROM actividad_personal ap
+                JOIN usuarios u ON ap.usuario_id = u.id
+                WHERE ap.actividad_id = %s
+            """, (actividad_id,))
+            result = cursor.fetchall()
+            payload = []
+            for data in result:
+                content = {
+                    'id':           data[0],
+                    'actividad_id': data[1],
+                    'usuario_id':   data[2],
+                    'rol':          data[3],
+                    'notas':        data[4],
+                    'creado_en':    str(data[5]),
+                    'nombre':       data[6],
+                    'apellido':     data[7]
+                }
+                payload.append(content)
+            return jsonable_encoder(payload)
+        except psycopg2.Error as err:
+            print(err)
+            conn.rollback()
+        finally:
+            conn.close()
