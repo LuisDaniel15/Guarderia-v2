@@ -1,9 +1,25 @@
 from fastapi import APIRouter
 from controllers.historial_controller import HistorialController
 from models.historial_model import Historial
+from pydantic import BaseModel
+from typing import List, Optional
 
 router = APIRouter()
 ctrl = HistorialController()
+
+class HistorialCompleto(BaseModel):
+    autor_id: Optional[int] = None
+    categoria: str = 'general'
+    titulo: Optional[str] = None
+    descripcion: str
+    medidas_tomadas: Optional[str] = None
+    acudiente_notificado: bool = False
+    es_privado: bool = False
+    ninos: List[int] = []
+
+@router.post("/crear_completo")
+def crear_completo(datos: HistorialCompleto):
+    return ctrl.crear_historial_completo(datos.dict())
 
 @router.post("/create_historial")
 def create_historial(historial: Historial):

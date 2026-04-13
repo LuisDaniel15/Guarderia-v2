@@ -11,8 +11,8 @@ class ActividadController:
             conn = get_db_connection()
             cursor = conn.cursor()
             cursor.execute(
-                "INSERT INTO actividades (titulo, descripcion, tipo, fecha, hora_inicio, hora_fin, grupo) VALUES (%s, %s, %s, %s, %s, %s, %s)",
-                (actividad.titulo, actividad.descripcion, actividad.tipo, actividad.fecha, actividad.hora_inicio, actividad.hora_fin, actividad.grupo)
+                "INSERT INTO actividades (titulo, descripcion, tipo, fecha, hora_inicio, hora_fin, grupo, grupo_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
+                (actividad.titulo, actividad.descripcion, actividad.tipo, actividad.fecha, actividad.hora_inicio, actividad.hora_fin, actividad.grupo, actividad.grupo_id)
             )
             conn.commit()
             return {"resultado": "Actividad creada"}
@@ -39,7 +39,8 @@ class ActividadController:
                     'hora_fin':      str(result[6]) if result[6] else None,
                     'grupo':         result[7],
                     'creado_en':     str(result[8]),
-                    'actualizado_en':str(result[9])
+                    'actualizado_en':str(result[9]),
+                    'grupo_id':      result[10]
                 }
                 return jsonable_encoder(content)
             else:
@@ -68,7 +69,8 @@ class ActividadController:
                     'hora_fin':      str(data[6]) if data[6] else None,
                     'grupo':         data[7],
                     'creado_en':     str(data[8]),
-                    'actualizado_en':str(data[9])
+                    'actualizado_en':str(data[9]),
+                    'grupo_id':      data[10]
                 }
                 payload.append(content)
             return jsonable_encoder(payload)
@@ -83,8 +85,8 @@ class ActividadController:
             conn = get_db_connection()
             cursor = conn.cursor()
             cursor.execute(
-                "UPDATE actividades SET titulo=%s, descripcion=%s, tipo=%s, fecha=%s, hora_inicio=%s, hora_fin=%s, grupo=%s WHERE id=%s",
-                (actividad.titulo, actividad.descripcion, actividad.tipo, actividad.fecha, actividad.hora_inicio, actividad.hora_fin, actividad.grupo, actividad_id)
+                "UPDATE actividades SET titulo=%s, descripcion=%s, tipo=%s, fecha=%s, hora_inicio=%s, hora_fin=%s, grupo=%s, grupo_id=%s WHERE id=%s",
+                (actividad.titulo, actividad.descripcion, actividad.tipo, actividad.fecha, actividad.hora_inicio, actividad.hora_fin, actividad.grupo, actividad.grupo_id, actividad_id)
             )
             conn.commit()
             return {"resultado": "Actividad actualizada"}

@@ -30,8 +30,8 @@ def get_asistencias():
     return ctrl.get_asistencias()
 
 @router.get("/get_asistencias_hoy")
-def get_asistencias_hoy():
-    return ctrl.get_asistencias_hoy()
+def get_asistencias_hoy(grupo_id: int = None):
+    return ctrl.get_asistencias_hoy(grupo_id)
 
 @router.put("/update_asistencia/{asistencia_id}")
 def update_asistencia(asistencia_id: int, asistencia: Asistencia):

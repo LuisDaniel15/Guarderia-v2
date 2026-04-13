@@ -142,16 +142,25 @@ class AsistenciaController:
         finally:
             conn.close()
 
-    def get_asistencias_hoy(self):
+    def get_asistencias_hoy(self, grupo_id: int = None):
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
-            cursor.execute("""
-                SELECT a.*, n.nombre, n.apellido 
-                FROM asistencia a
-                JOIN ninos n ON a.nino_id = n.id
-                WHERE a.fecha = CURRENT_DATE
-            """)
+            if grupo_id:
+                cursor.execute("""
+                    SELECT a.*, n.nombre, n.apellido 
+                    FROM asistencia a
+                    JOIN ninos n ON a.nino_id = n.id
+                    WHERE a.fecha = CURRENT_DATE
+                    AND n.grupo_id = %s
+                """, (grupo_id,))
+            else:
+                cursor.execute("""
+                    SELECT a.*, n.nombre, n.apellido 
+                    FROM asistencia a
+                    JOIN ninos n ON a.nino_id = n.id
+                    WHERE a.fecha = CURRENT_DATE
+                """)
             result = cursor.fetchall()
             payload = []
             for data in result:

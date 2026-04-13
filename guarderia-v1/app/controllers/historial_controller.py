@@ -113,3 +113,37 @@ class HistorialController:
             conn.rollback()
         finally:
             conn.close()
+
+    def crear_historial_completo(self, datos: dict):
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            # 1. Crear historial
+            cursor.execute(
+                """INSERT INTO historial 
+                (autor_id, categoria, titulo, descripcion, fecha, medidas_tomadas, 
+                acudiente_notificado, es_privado) 
+                VALUES (%s, %s, %s, %s, COALESCE(%s, CURRENT_DATE), %s, %s, %s) RETURNING id""",
+                (datos['autor_id'], datos['categoria'], datos['titulo'],
+                datos['descripcion'], datos.get('fecha'), datos.get('medidas_tomadas'),
+                datos.get('acudiente_notificado', False), datos.get('es_privado', False))
+            )
+            historial_id = cursor.fetchone()[0]
+
+            # 2. Vincular niños
+            for nino_id in datos.get('ninos', []):
+                cursor.execute(
+                    "INSERT INTO historial_ninos (historial_id, nino_id) VALUES (%s, %s)",
+                    (historial_id, nino_id)
+                )
+
+            conn.commit()
+            return {"resultado": "Historial creado", "historial_id": historial_id}
+
+        except psycopg2.Error as err:
+            print(err)
+            conn.rollback()
+            return {"error": str(err)}
+        finally:
+            conn.close()
