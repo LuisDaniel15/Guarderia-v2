@@ -7,8 +7,11 @@ from fastapi.encoders import jsonable_encoder
 class RolController:
 
     def create_rol(self, rol: Rol):
+        conn = None # 1. Inicializar
         try:
             conn = get_db_connection()
+            if conn is None: raise Exception("Error de conexión")
+            
             cursor = conn.cursor()
             cursor.execute(
                 "INSERT INTO roles (nombre, descripcion) VALUES (%s, %s)",
@@ -16,15 +19,19 @@ class RolController:
             )
             conn.commit()
             return {"resultado": "Rol creado"}
-        except psycopg2.Error as err:
-            print(err)
-            conn.rollback()
+        except Exception as err:
+            print(f"Error: {err}")
+            if conn: conn.rollback() # 2. Verificar antes de usar
+            raise HTTPException(status_code=500, detail=str(err))
         finally:
-            conn.close()
+            if conn: conn.close() # 3. Verificar antes de cerrar
 
     def get_rol(self, rol_id: int):
+        conn = None
         try:
             conn = get_db_connection()
+            if conn is None: raise Exception("Error de conexión")
+            
             cursor = conn.cursor()
             cursor.execute("SELECT * FROM roles WHERE id = %s", (rol_id,))
             result = cursor.fetchone()
@@ -37,15 +44,20 @@ class RolController:
                 return jsonable_encoder(content)
             else:
                 raise HTTPException(status_code=404, detail="Rol no encontrado")
-        except psycopg2.Error as err:
-            print(err)
-            conn.rollback()
+        except Exception as err:
+            print(f"Error: {err}")
+            if conn: conn.rollback()
+            if isinstance(err, HTTPException): raise err
+            raise HTTPException(status_code=500, detail=str(err))
         finally:
-            conn.close()
+            if conn: conn.close()
 
     def get_roles(self):
+        conn = None
         try:
             conn = get_db_connection()
+            if conn is None: raise Exception("Error de conexión")
+            
             cursor = conn.cursor()
             cursor.execute("SELECT * FROM roles")
             result = cursor.fetchall()
@@ -58,15 +70,19 @@ class RolController:
                 }
                 payload.append(content)
             return jsonable_encoder(payload)
-        except psycopg2.Error as err:
-            print(err)
-            conn.rollback()
+        except Exception as err:
+            print(f"Error: {err}")
+            if conn: conn.rollback()
+            raise HTTPException(status_code=500, detail=str(err))
         finally:
-            conn.close()
+            if conn: conn.close()
 
     def update_rol(self, rol_id: int, rol: Rol):
+        conn = None
         try:
             conn = get_db_connection()
+            if conn is None: raise Exception("Error de conexión")
+            
             cursor = conn.cursor()
             cursor.execute(
                 "UPDATE roles SET nombre = %s, descripcion = %s WHERE id = %s",
@@ -74,21 +90,26 @@ class RolController:
             )
             conn.commit()
             return {"resultado": "Rol actualizado"}
-        except psycopg2.Error as err:
-            print(err)
-            conn.rollback()
+        except Exception as err:
+            print(f"Error: {err}")
+            if conn: conn.rollback()
+            raise HTTPException(status_code=500, detail=str(err))
         finally:
-            conn.close()
+            if conn: conn.close()
 
     def delete_rol(self, rol_id: int):
+        conn = None
         try:
             conn = get_db_connection()
+            if conn is None: raise Exception("Error de conexión")
+            
             cursor = conn.cursor()
             cursor.execute("DELETE FROM roles WHERE id = %s", (rol_id,))
             conn.commit()
             return {"resultado": "Rol eliminado"}
-        except psycopg2.Error as err:
-            print(err)
-            conn.rollback()
+        except Exception as err:
+            print(f"Error: {err}")
+            if conn: conn.rollback()
+            raise HTTPException(status_code=500, detail=str(err))
         finally:
-            conn.close()
+            if conn: conn.close()
