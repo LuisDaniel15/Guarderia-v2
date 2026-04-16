@@ -5,7 +5,7 @@ def get_db_connection():
     try:
         conn = psycopg2.connect(
             host="aws-0-us-west-2.pooler.supabase.com",
-            port=6543,  # 🔥 ESTE ES EL CAMBIO
+            port=6543,
             database="postgres",
             user="postgres.ilbbknzbfbmzpzineojv",
             password="zPPQYrCSnhAHd1KE"
@@ -27,6 +27,6 @@ def get_db_connection():
 #         return conn
 #     except Exception as e:
 #         print("\n==================================================")
-#         print(f"❌ ERROR DE CONEXIÓN EN NEON: {e}")
+#         print(f"ERROR DE CONEXIÓN EN NEON: {e}")
 #         print("==================================================\n")
 #         return None

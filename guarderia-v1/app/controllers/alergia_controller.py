@@ -98,3 +98,28 @@ class AlergiaController:
             conn.rollback()
         finally:
             conn.close()
+
+
+    def get_alergias_by_nino(self, nino_id: int):
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM alergias WHERE nino_id = %s", (nino_id,))
+            result = cursor.fetchall()
+            payload = []
+            for data in result:
+                content = {
+                    'id':          data[0],
+                    'nino_id':     data[1],
+                    'tipo':        data[2],
+                    'descripcion': data[3],
+                    'severidad':   data[4],
+                    'creado_en':   str(data[5])
+                }
+                payload.append(content)
+            return jsonable_encoder(payload)
+        except psycopg2.Error as err:
+            print(err)
+            conn.rollback()
+        finally:
+            conn.close()

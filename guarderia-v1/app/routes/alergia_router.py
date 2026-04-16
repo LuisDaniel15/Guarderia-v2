@@ -17,6 +17,10 @@ def get_alergia(alergia_id: int):
 def get_alergias():
     return ctrl.get_alergias()
 
+@router.get("/get_by_nino/{nino_id}")
+def get_by_nino(nino_id: int):
+    return ctrl.get_alergias_by_nino(nino_id)
+
 @router.put("/update_alergia/{alergia_id}")
 def update_alergia(alergia_id: int, alergia: Alergia):
     return ctrl.update_alergia(alergia_id, alergia)

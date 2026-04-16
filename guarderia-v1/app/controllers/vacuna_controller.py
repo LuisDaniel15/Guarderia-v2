@@ -100,3 +100,29 @@ class VacunaController:
             conn.rollback()
         finally:
             conn.close()
+
+
+    def get_vacunas_by_nino(self, nino_id: int):
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM vacunas WHERE nino_id = %s", (nino_id,))
+            result = cursor.fetchall()
+            payload = []
+            for data in result:
+                content = {
+                    'id':               data[0],
+                    'nino_id':          data[1],
+                    'nombre':           data[2],
+                    'fecha_aplicacion': str(data[3]),
+                    'proxima_dosis':    str(data[4]) if data[4] else None,
+                    'notas':            data[5],
+                    'creado_en':        str(data[6])
+                }
+                payload.append(content)
+            return jsonable_encoder(payload)
+        except psycopg2.Error as err:
+            print(err)
+            conn.rollback()
+        finally:
+            conn.close()
